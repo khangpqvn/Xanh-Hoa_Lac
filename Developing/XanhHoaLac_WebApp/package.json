@@ -1,0 +1,10 @@
+{
+  "name": "XanhHoaLac_WebApp",
+  "version": "0.0.1",
+  "author": "KhangPQ",
+  "main": "server.js",
+  "repository": "https://github.com/khang21081995/Xanh-Hoa_Lac/tree/master/Developing/XanhHoaLac_WebApp",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
