@@ -1,0 +1,11 @@
+{
+  "SERVER_PORT": "3000",
+  "GOOGLE_CLIENT_ID": "937557025839-6airh4eht3hl2596pf03aefnvfnqj9qo.apps.googleusercontent.com",
+  "GOOGLE_CLIENT_SECRET": "MCVM_nj9xb_QjLI04Dc5ohW2",
+  "GOOGLE_CLIENT_CALLBACK": "http://localhost:3000/auth/google/callback",
+  "MONGO_DATABASE_USERNAME": "admin",
+  "MONGO_DATABASE_PASSWORD": "admin",
+  "MONGO_DATABASE_URL": "@ds159330.mlab.com:59330/xanhhola",
+  "APP_SECRET_KEY": "KhangPQSE03624",
+  "HOSTNAME": "127.0.0.1"
+}
