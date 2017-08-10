@@ -5,10 +5,9 @@
 
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var configGoogleServer = require('./auth-example.json').google;
+var configGoogleServer = require('../google.server.config.json').google;
 
-
-module.exports = function () {
+module.exports = function (User) {
 
     passport.serializeUser(function (user, done) {
         // done(null, user.id);
@@ -20,21 +19,27 @@ module.exports = function () {
         done(null, obj);
     });
 
-
-// Use the GoogleStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Google
-//   profile), and invoke a callback with a user object.
-//   See http://passportjs.org/docs/configure#verify-callback
     passport.use(new GoogleStrategy(
-        // Use the API access settings stored in ./config/auth.json. You must create
-        // an OAuth 2 client ID and secret at: https://console.developers.google.com
         configGoogleServer,
         function (accessToken, refreshToken, profile, done) {
-                console.log('id : '+ profile.id);
-                console.log('name :'+ profile.displayName);
-                console.log('email :' + profile.emails);
-                return done(null,true);
+            // console.log('id : ' + profile.id);
+            // console.log('name :' + profile.displayName);
+            // console.log('emails :' + profile.emails[0].value.toLowerCase());
+
+            User.findOne({username: profile.emails[0].value.toLowerCase()})
+                .exec(
+                    function (err, data) {
+                        // console.log(data)
+                        if (data) {
+                            // console.log(profile);
+                            profile.role = data.role;
+                            profile.isBlock = data.isBlock;
+                            // profile.name = data.name;
+                            return done(err, profile);
+                        } else
+                            return done(err, null);
+                    }
+                )
         }
     ));
 

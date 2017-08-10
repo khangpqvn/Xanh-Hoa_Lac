@@ -1,7 +1,0 @@
-{
-    "google": {
-        "clientID": "937557025839-6airh4eht3hl2596pf03aefnvfnqj9qo.apps.googleusercontent.com",
-        "clientSecret": "MCVM_nj9xb_QjLI04Dc5ohW2",
-        "callbackURL": "http://localhost:3000/api/auth/google/callback"
-    }
-}

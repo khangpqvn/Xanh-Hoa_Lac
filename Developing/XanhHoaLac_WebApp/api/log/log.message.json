@@ -1,0 +1,12 @@
+{
+  "messages": {
+    "missing_param": "Thiếu thông số đầu vào",
+    "nothing_to_show": "Không tồn tại bản ghi nào...",
+    "search_err": "Phát sinh lỗi trong quá trình tìm kiếm",
+    "target_not_in_systen": "Đối tượng không tồn tại trong hệ thống",
+    "action_required": "Hành độc thực hiện không được để trống!",
+    "user_required": "Người thực hiện hành động không được để trống!",
+    "target_required": "Node mục tiêu không được để trống",
+    "info_invalid":"Thông tin node mục tiêu hoặc hành động thực hiện không hợp lệ"
+  }
+}

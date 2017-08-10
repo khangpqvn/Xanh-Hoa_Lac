@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <%- include ../template/header.ejs %>
+    <title>Xanh-Hòa Lạc :: Trang Chủ</title>
+    <!-- Custom CSS -->
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+
+<legend>Add user</legend>
+<div class="form-group">
+    <label for="username">phoneNumber</label>
+    <input type="text" class="form-control" name="" id="username" placeholder="User name...">
+</div>
+<div class="form-group">
+    <label for="role">lat</label>
+    <input type="text" class="form-control" name="" id="role" placeholder="role">
+</div>
+<div class="form-group">
+    <label for="lng">lng</label>
+    <input type="text" class="form-control" name="" id="lng" placeholder="role">
+</div>
+<div class="form-group">
+    <label for="des">Description</label>
+    <input type="text" class="form-control" name="" id="des" placeholder="role">
+</div>
+
+<button type="button" onclick="submit()">Submit</button>
+
+<script type="text/javascript">
+    function callAjax(jsonStringSend, urlReciver, methodSend, callBackFunction) {
+        var data = (jsonStringSend);
+        $.ajax({
+            url: urlReciver,
+            method: methodSend,
+            contentType: "application/json",
+            data: data
+        }).done(function (response) {
+            callBackFunction(response);
+        });
+
+    }
+    function callback(res) {
+        console.log(res);
+    }
+    function submit() {
+        console.log("submit");
+        var username1 = document.getElementById('username').value;
+        var role1 = document.getElementById('role').value;
+        var lng = document.getElementById('lng').value;
+        var des = document.getElementById('des').value;
+        var data = JSON.stringify({
+            phoneNumber: username1,
+            lat: role1,
+            lng: lng,
+            description: des
+        });
+        console.log(data);
+        callAjax(data, "/api/node/add", "POST", callback);
+    }
+</script>
+</body>
+</html>

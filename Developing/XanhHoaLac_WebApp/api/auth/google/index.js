@@ -6,31 +6,28 @@
 var express = require('express');
 var controller = require('./google.controller.js');
 var passport = require('passport');
-
+var authService = require("../service");
 var router = express.Router();
 
 require('./google.passport');
 
-router.get("/logout", controller.logout);
+/***************************** api/auth/google  *****************************/
+
+router.get('/callback', passport.authenticate('google', {
+    failureRedirect: '/api/auth/google/fail',
+    successRedirect: '/api/auth/google/success'
+}));
+
 router.get('/login', passport.authenticate('google', {
     scope: [
         'https://www.googleapis.com/auth/plus.me',
         'https://www.googleapis.com/auth/plus.login',
-        'https://www.googleapis.com/auth/plus.profile.emails.read']
+        'https://www.googleapis.com/auth/plus.profile.emails.read'
+    ]
 }));
-router.get('/success', ensureAuthenticated, controller.loginSuccess);
-router.get('/fail', ensureAuthenticated, controller.loginFail);
-router.get('/callback', passport.authenticate('google', {
-    successRedirect: '/api/auth/google/success',
-    failureRedirect: '/api/auth/google/fail'
-}));
+router.get('/success', authService.ensureAuthenticated, controller.loginSuccess);
+router.get('/fail', controller.loginFail);
 
-// Simple route middleware to ensure user is authenticated.
-function ensureAuthenticated(req, res, next) {
-    console.log(req.isAuthenticated());
-    if (req.isAuthenticated()) {
-        return next();
-    } else
-        res.redirect('/api/auth/google/login');
-}
+router.get("/logout", controller.logout);
+
 module.exports = router;

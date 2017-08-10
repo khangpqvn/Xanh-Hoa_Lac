@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <%- include ../template/header.ejs %>
+    <title>Xanh-Hòa Lạc :: Trang Chủ</title>
+    <!-- Custom CSS -->
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+
+        td, tr {
+            padding: 5px;
+        }
+
+        .table thead > tr > th {
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .th-inner {
+            text-align: center;
+        }
+
+        .panel-primary > .panel-heading {
+            color: #fff;
+            background-color: #1f6f12;
+            border-color: #101010;
+        }
+
+        .row {
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+
+        .panel-heading div {
+            margin-top: -18px;
+            font-size: 15px;
+        }
+
+        .panel-heading div span {
+            margin-left: 5px;
+        }
+
+        .panel-body {
+            display: none;
+        }
+
+    </style>
+    <script src="../js/moment.js" language="JavaScript"></script>
+</head>
+<body>
+<%- include ../template/navbar.ejs %>
+<div id="map"></div>
+<div id="message" style="color:red;" aria-hidden="true"></div>
+<div id="form">
+    <table style="width: 350px">
+        <tr>
+            <td>Số điện thoại:</td>
+            <td colspan="2">
+                <b><span id="node-infor-phoneNumber"></span></b>
+            </td>
+        </tr>
+        <!--<tr>-->
+        <!--<td>Position:</td>-->
+        <!--<td colspan="2">-->
+        <!--<b><span id="node-infor-position"></span> </b>-->
+        <!--</td>-->
+        <!--</tr>-->
+        <tr>
+            <td>Mô tả:</td>
+            <td colspan="2">
+                <div class="form-group">
+                    <textarea class="form-control" rows="2" id="node-infor-description"> </textarea>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td colspan="2">
+                <div class="form-group"><b><span id="node-infor-message" style="color: red"></span></b></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="btn btn-block btn-primary" onclick="btnViewLogClick()">Xem Log</button>
+            </td>
+            <td>
+                <button class="btn btn-block btn-warning" onclick="btnModifyClick()">Sửa</button>
+            </td>
+            <td>
+                <button class="btn btn-block btn-danger" onclick="btnDeleteClick()">Xóa</button>
+            </td>
+
+        </tr>
+
+    </table>
+</div>
+
+<!--MODAL ADD NODE-->
+<div class="modal fade" id="add-node-modal" tabindex="-1" role="dialog" aria-labelledby="add" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading">Thêm Node</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="number" class="form-control clear-text" maxlength="15" name="" id="add-phonenumber"
+                           placeholder="Số điện thoại">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control clear-text" name="" id="add-description"
+                           placeholder="Mô tả về node">
+                </div>
+
+                <div class="form-group mess" style="color: red; font-size: 30px" id="addFormMessage">
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-warning btn-lg" onclick="btnAddNodeClick()"
+                        style="width: 100%;"><span
+                            class="glyphicon glyphicon-ok-sign"></span> Thêm
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--MODAL ADD NODE/-->
+
+<!--MODAL VIEW LOG-->
+<div class="modal fade" id="view-log-modal" tabindex="-1" role="dialog" aria-labelledby="viewLog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading"><span
+                            id="history-node">Lịch sử hành động gần nhất</span></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover text-center table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Người thực hiện</th>
+                        <th>Hành động</th>
+                        <th>Mô tả hành động</th>
+                        <th>Thời gian thực hiện</th>
+                    </tr>
+                    </thead>
+                    <tbody id="log-data">
+                    <tr>
+                        <td>Người thực hiện</td>
+                        <td>Hành động</td>
+                        <td>Mô tả hành động</td>
+                        <td>Thời gian thực hiện</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--MODAL VIEW LOG/-->
+
+<!--MODAL CONFIRM-->
+<div class="modal fade" id="confirm-modal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading"><span id='confirm-header'></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <span class="glyphicon glyphicon-warning-sign"></span>
+                    <span id="confirm-message"></span>
+                </div>
+
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-success" data-dismiss="modal" id="btnYes"
+                        onclick="btnYesClick()"><span
+                            class="glyphicon glyphicon-ok-sign"></span> Đồng ý
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnNo"
+                        onclick="btnNoClick()"><span
+                            class="glyphicon glyphicon-remove"></span> Không
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--MODAL BLOCK USER/-->
+
+
+<script>
+    var map;
+    var infowindow;
+    var messagewindow;
+    var FUni = {lat: 21.013392, lng: 105.525944};
+    var selectedMarker;
+    var isClick = false;
+    var caseModifile;
+    var tempMarker;
+    function closeInforWindows() {
+        $("#node-infor-message").html("");
+//        infowindow.open(map, null);
+        infowindow.close();
+        $("#form").hide();
+    }
+
+    function closeMessageWindows() {
+        messagewindow.open(map, null);
+        messagewindow.close();
+
+    }
+
+    function initMap() {
+        $("#form").hide();
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: FUni,
+            zoom: 18
+        });
+
+        map.addListener('click', function (event) {
+//            new GmapMarker("", "", , false);
+            if (tempMarker) {
+                tempMarker.setMap(null);
+            }
+            tempMarker = new google.maps.Marker({
+                position: {lat: event.latLng.lat(), lng: event.latLng.lng()},
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP
+            });
+            tempMarker.addListener("click", function () {
+                selectedMarker = tempMarker;
+                closeInforWindows();
+                closeMessageWindows();
+                $("#add-node-modal").modal({
+                    show: true
+                });
+            });
+            closeInforWindows();
+            closeMessageWindows();
+
+        });
+
+        infowindow = new google.maps.InfoWindow({
+            content: document.getElementById('form')
+        });
+
+        messagewindow = new google.maps.InfoWindow({
+            content: document.getElementById('message')
+        });
+        // Init node in database
+        callAjax("", "/api/node/findAll", "GET", callback);
+    }
+    function GmapMarker(phoneNumber, description, lat, lng, isDelete, _id) {
+        var that = this;
+        this._id = _id;
+        this.phoneNumber = phoneNumber;
+        this.description = description;
+        this.lat = +lat;
+        this.lng = +lng;
+        this.isDelete = isDelete;
+        this.afterLat = +lat;
+        this.afterLng = +lng;
+        this.afterDescription = description;
+        this.afterIsDelete = isDelete;
+        this.marker = new google.maps.Marker({
+            position: {lat: +lat, lng: +lng},
+            map: map,
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+            title: that.phoneNumber,
+            icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
+        });
+        this.updateInfo = function (phoneNumber, description, lat, lng, isDelete) {
+            var data = JSON.stringify({
+                phoneNumber: phoneNumber,
+                lat: +lat,
+                lng: +lng,
+                description: description,
+                isDelete: isDelete
+            });
+            callAjax(data, "/api/node/edit", "POST", function (res) {
+                console.log(res);
+                if (res.status) {
+                    if (caseModifile === "delete") {
+                        that.removeMarker();
+                    }
+                    that.phoneNumber = phoneNumber;
+                    that.description = description;
+                    that.lat = +lat;
+                    that.lng = +lng;
+                    that.isDelete = isDelete;
+                    that.afterLat = +lat;
+                    that.afterLng = +lng;
+                    that.afterDescription = description;
+                    that.afterIsDelete = isDelete;
+//                    that._setPostion(that.lat, that.lng);
+                } else {
+                    that.returnLastPosition();
+                }
+                if (caseModifile === "position")
+                    that.openMessageWindow(res.message);
+                if (caseModifile === "modify") {
+                    $("#node-infor-message").html(res.message);
+                }
+            })
+        }
+        this._setPostion = function (lat, lng) {
+            var latlng = new google.maps.LatLng(+lat, +lng);
+            that.marker.setPosition(latlng);
+        };
+        this.returnLastPosition = function () {
+            var latlng = new google.maps.LatLng(+that.lat, +that.lng);
+            that.marker.setPosition(latlng);
+        }
+        this.removeMarker = function () {
+            that.marker.setMap(null);
+        }
+        this.openInfoWindow = function () {
+//            $('#node-infor-phoneNumber').html(that.phoneNumber);
+//            $('#node-infor-description').val(that.description);
+            $("#form").show();
+            $("#node-infor-message").html("");
+            infowindow.open(map, that.marker);
+            $('#node-infor-phoneNumber').html(that.phoneNumber);
+            $('#node-infor-description').val(that.description);
+
+//            $('#node-infor-position').html("Lat : " + this.lat + "<p><p>Lng: " + this.lng);
+
+        }
+        this.closeInfoWindow = function () {
+            $("#form").hide();
+            infowindow.close();
+            $("#node-infor-message").html("");
+
+        }
+        this.openMessageWindow = function (message) {
+            messagewindow.open(map, that.marker)
+            $('#message').html(message);
+        }
+        this.closeMessageWindow = function () {
+            $('#message').html("");
+            messagewindow.close();
+        }
+
+        this.marker.addListener("dragstart", function () {
+            caseModifile = "position";
+            selectedMarker = that;
+            that.closeInfoWindow();
+        });
+        this.marker.addListener("drag", function () {
+            that.openMessageWindow(that.marker.position.lat() + ", " + that.marker.position.lng());
+        });
+        this.marker.addListener("dragend", function () {
+            that.closeMessageWindow();
+            that.afterLat = that.marker.position.lat();
+            that.afterLng = that.marker.position.lng();
+            if (that.afterLat !== that.lat || that.afterLng !== that.lng) {
+                $('#confirm-modal').modal({
+                    show: 'true'
+                });
+                $('#confirm-header').html("Sửa vị trí node này?");
+                $('#confirm-message').html("Bạn có chắc chắn muốn CẬP NHẬT VỊ TRÍ của NODE này?");
+            }
+        });
+        this.marker.addListener("click", function () {
+            selectedMarker = that;
+            that.openInfoWindow();
+            messagewindow.close();
+        });
+    }
+
+
+    function callback(response) {
+        response.forEach(function (node) {
+            var marker = new GmapMarker(node.phoneNumber, node.description, node.lat, node.lng, node.isDelete, node._id);
+//            marker.openInfoWindow();
+//            alert(marker.phoneNumber);
+        });
+    }
+
+    function resetMessage() {
+        $("#node-infor-message").html("");
+        $("#addFormMessage").html("");
+
+    }
+
+    function btnAddNodeClick() {
+        resetMessage();
+        var phoneNumber = $("#add-phonenumber").val();
+        var description = $("#add-description").val();
+        var lat = +selectedMarker.position.lat();
+        var lng = +selectedMarker.position.lng();
+        var messageElement = $("#addFormMessage");
+        var marker = selectedMarker;
+        var data = JSON.stringify({
+            phoneNumber: phoneNumber,
+            lat: lat,
+            lng: lng,
+            description: description
+        });
+        if(!phoneNumber){
+            messageElement.html("Số điện thoại không được để trống");
+            return;
+        }
+        callAjax(data, "/api/node/add", "POST", function (res) {
+            if (res.status) {
+                messageElement.html(res.message);
+                new GmapMarker(phoneNumber, description, lat, lng, false, res._id);
+                marker.setMap(null);
+               setTimeout(function(){$("#add-node-modal").modal('hide')},2000);
+            } else {
+                messageElement.html(res.message);
+            }
+        })
+
+
+    }
+    function btnNoClick() {
+        isClick = true;
+        if (caseModifile === "position") {
+            selectedMarker.returnLastPosition();
+        } else if (caseModifile === "modify") {
+            console.log("modify: " + selectedMarker.description);
+            $("#node-infor-description").val(selectedMarker.description);
+        }
+    }
+    function btnYesClick() {
+        isClick = true;
+
+        if (caseModifile === "position") {
+            selectedMarker.updateInfo(selectedMarker.phoneNumber, selectedMarker.description, selectedMarker.afterLat, selectedMarker.afterLng, selectedMarker.isDelete);
+        } else if (caseModifile === "modify") {
+            selectedMarker.updateInfo(selectedMarker.phoneNumber, selectedMarker.afterDescription, selectedMarker.lat, selectedMarker.lng, selectedMarker.isDelete);
+        } else if (caseModifile === "delete") {
+            selectedMarker.updateInfo(selectedMarker.phoneNumber, selectedMarker.description, selectedMarker.lat, selectedMarker.lng, selectedMarker.afterIsDelete);
+        }
+    }
+
+    function btnModifyClick() {
+        resetMessage();
+        isClick = false;
+        caseModifile = "modify";
+        console.log(selectedMarker.afterDescription = $('#node-infor-description').val());
+        if ($('#node-infor-description').val() !== selectedMarker.description) {
+            $('#confirm-modal').modal({
+                show: 'true'
+            });
+            $('#confirm-header').html("Cập nhật mô tả node?");
+            $('#confirm-message').html("Bạn chắc chắn rằng muốn CẬP NHẬT MÔ TẢ cho NODE này?");
+        }
+    }
+    function btnViewLogClick() {
+        resetMessage();
+        console.log(selectedMarker._id);
+        var data = JSON.stringify({
+            target: selectedMarker._id
+        });
+        $("#log-data").html("");
+        $("#history-node").html("Lịch sử tối đa 5 hành động gấn nhất tác động lên node " + selectedMarker.phoneNumber);
+//            var moment = moment();
+//            selectedMarker.closeInfoWindow();
+        $('#view-log-modal').modal({
+            show: 'true'
+        });
+        callAjax(data, "/api/log/viewLogByTarget", "POST", function (res) {
+            if (res.status) {
+//                console.log(res.data);
+                res.data.forEach(function (log, index) {
+                    $("#log-data").append(
+                        "<tr>" +
+                        "<td>" + log.username.username + "</td>" +
+                        "<td>" + transAction(log.action) + "</td>" +
+                        "<td>" + log.description.replace("\n", "<br/>") + "</td>" +
+                        "<td>" + moment(log.time).format(' HH:mm:ss   DD/MM/YYYY') + "</td>" +
+                        "</tr>"
+                    );
+
+//
+//                    console.log(" p1 ", p1 ," p2 ", p2," p3 ",p3)
+                })
+            } else {
+                $("#log-data").append("<tr>" +
+                    "<td colspan='4'>" + res.message + "</td>" +
+                    "</tr>");
+            }
+        })
+        function showLogModal() {
+
+        }
+    }
+
+    function btnDeleteClick() {
+        resetMessage();
+        isClick = false;
+        caseModifile = "delete";
+        selectedMarker.afterIsDelete = true;
+        $('#confirm-modal').modal({
+            show: 'true'
+        });
+        $('#confirm-header').html("Xóa node?");
+        $('#confirm-message').html("Bạn chắc chắn rằng mình muốn xóa node này? ( " + selectedMarker.phoneNumber + " ).");
+    }
+
+
+    $('#confirm-modal').on("shown.bs.modal", function () {
+        isClick = false;
+    });
+
+    $('#confirm-modal').on("hidden.bs.modal", function () {
+        if (!isClick) {
+            if (caseModifile === "position") {
+                selectedMarker.returnLastPosition();
+            } else if (caseModifile === "modify") {
+                $("#node-infor-description").val(selectedMarker.description);
+            }
+        }
+    });
+
+
+    $("#add-node-modal").on("hidden.bs.modal", function () {
+        $(".clear-text").val("");
+        $("#addFormMessage").html("");
+    })
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASSSRsUS-qlzYxCG_VVmOnDuZHNwK-4dw&callback=initMap"
+        async defer></script>
+</body>
+</html>
