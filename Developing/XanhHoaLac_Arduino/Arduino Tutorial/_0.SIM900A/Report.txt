@@ -1,9 +1,0 @@
-Done:
-- connect arduino to SIM900A module
-- study SIM900A library
-
-Issues:
-- cap nguon cho arduino và module SIM900A, nguon cap tu chan 5V cua arduino khong du on dinh de module SIM hoat dong
-
-Task:
-- nghien cuu module realtime
