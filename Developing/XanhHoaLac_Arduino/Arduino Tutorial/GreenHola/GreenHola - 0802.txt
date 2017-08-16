@@ -1,0 +1,370 @@
+#include "SIM900.h" 
+#include "sms.h"
+#include <SoftwareSerial.h> 
+#include <Wire.h> 
+
+SMSGSM sms;
+const byte DS1307 = 0x68;       /* Địa chỉ của DS1307 */
+const byte NumberOfFields = 7;  /* Số byte dữ liệu sẽ đọc từ DS1307 */
+/* DEFINE */
+/* Module SIM */
+char number[20];            /* số điện thoại format theo định dạng quốc tế */
+boolean started = false;    /* trạng thái module SIM */
+char smstext[160];          /* nội dung tin nhắn đến */
+/* Node */
+byte node = 12;      /* chân Uno điều khiển node */
+int nodeSession = 0; /* phiên làm việc của node */
+int nodeStatus = 0;  /* trạng thái node */
+int nodeDuration = 0;/* thời gian hoạt động */
+int nodeModeSchedule = 0;                       /* chế độ đặt lịch */
+int nodeCalendarSchedule[7] = {0,0,0,0,0,0,0};  /* ngày đặt lịch: 0-Sun; 6-Sat */
+                                                /* lịch 1 lần: 0-day; 1-month; 2-year */
+int nodeTimeSchedule[2] = {0,0};                /* giờ đặt lịch: 0-minute; 1-hour */
+int nodeDurationSchedule = 0;                   /* thời gian hoạt động theo chương trình đặt lịch */
+/* DS-1307 */
+int currentSecond = 0;
+int second, minute, hour, day, wday, month, year; /* khai báo các biến thời gian */
+/* END-DEFINE */
+
+/* TEST FUNCTION */
+void testResult(){
+  Serial.print("Node status: ");
+  Serial.println(checkStatus());
+  Serial.print("Node session: ");
+  Serial.println(checkSession());
+  Serial.print("Node duration: ");
+  Serial.println(nodeDuration);
+  Serial.print("Schedule mode: ");
+  Serial.println(nodeModeSchedule);
+  Serial.print("Schedule calendar: ");
+  for (int i=0; i<7; i++)
+    Serial.print(nodeCalendarSchedule[i]);
+  Serial.print("\nSchedule Time: ");
+  for (int i=0; i<2; i++)
+    Serial.print(nodeTimeSchedule[i]);
+  Serial.print("\nSchedule duration: ");
+  Serial.println(nodeDurationSchedule);
+}
+/* END-TEST FUNCTION */
+/* DEVELOPING FUNCTION */
+/* convert SĐT thành số Integer để lưu session */
+int numberToInt(){
+  int num = 0;
+  for (int i=3; i< sizeof(number); i++)
+    num = num*10 + ((int)number[i] - 48);
+  return num;
+}
+/* trả về giá trị session hiện tại */
+int checkSession(){
+  return nodeSession;
+}
+/* thay đổi giá trị session */
+void setSession(int changeTo){
+  nodeSession = changeTo;
+}
+/* trả về status hiện tại của node */
+int checkStatus(){
+  return nodeStatus;
+}
+/* thay đổi status của node */
+void setStatus(int changeTo){
+  nodeStatus = changeTo;
+  if (changeTo == 0){
+    digitalWrite(node,LOW);
+    setSession(0);
+  } else {
+      digitalWrite(node,HIGH);
+  }
+}
+/* trả về giá trị MODE của SMS */
+int getMode(){
+  return (int)smstext[15] - 48;
+}
+/* trả về giá trị STATUS của SMS */
+int getStatus(){
+  return (int)smstext[14] - 48;
+}
+/* thay đổi lịch đặt theo tuần */
+void setWeekSchedule(){
+  for(int i=0; i<=6; i++)
+    nodeCalendarSchedule[i] = (int)smstext[i+7] - 48;
+  nodeTimeSchedule[0] = getHour();
+  nodeTimeSchedule[1] = getMinute();
+  nodeDurationSchedule = getDuration();
+}
+/* thay đổi lịch đặt theo ngày */
+void setDailySchedule(){
+  for(int i=0; i<=6; i++)
+    nodeCalendarSchedule[i] = 1;
+  nodeTimeSchedule[0] = getHour();
+  nodeTimeSchedule[1] = getMinute();
+  nodeDurationSchedule = getDuration();
+}
+/* thay đổi lịch đặt một lần */
+void setOnetimeSchedule(){
+  nodeCalendarSchedule[0] = getDay();
+  nodeCalendarSchedule[1] = getMonth();
+  nodeCalendarSchedule[2] = getYear();
+  nodeTimeSchedule[0] = getHour();
+  nodeTimeSchedule[1] = getMinute();
+  nodeDurationSchedule = getDuration();
+}
+/* reset đặt lịch */
+void resetSchedule(){
+  nodeModeSchedule = 0;
+  for(int i=0; i<=6; i++)
+    nodeCalendarSchedule[i] = 0;
+  for(int i=0; i<=1; i++)
+    nodeTimeSchedule[i] = 0;
+  nodeDurationSchedule = 0;
+}
+/* load Schedule vào phiên */
+void nodeScheduleAction(){
+  switch (nodeModeSchedule){
+    case 1:
+      if (day == nodeCalendarSchedule[0]
+          && month == nodeCalendarSchedule[1]
+          && year == nodeCalendarSchedule[2]
+          && hour == nodeTimeSchedule[0]
+          && minute == nodeTimeSchedule[1]){
+        setSession(1);
+        setStatus(1);
+        setDuration(nodeDurationSchedule);
+      }
+      break;
+    case 2: case 3:
+      if (nodeCalendarSchedule[wday-1] == 1
+          && hour == nodeTimeSchedule[0]
+          && minute == nodeTimeSchedule[1]){
+        setSession(1);
+        setStatus(1);
+        setDuration(nodeDurationSchedule);
+      }
+      break;
+  }
+}
+/* trả về giá trị WDAY của SMS */
+int getWDay(){
+  return (int)smstext[7] - 48;
+}
+/* trả về giá trị YEAR của SMS */
+int getYear(){
+  int year = (int)smstext[8] - 48;
+  year = year*10 + ((int)smstext[9] - 48);
+  return year+2000;
+}
+int getYr(){
+  return getYear() - 2000;
+}
+/* trả về giá trị MONTH của SMS */
+int getMonth(){
+  int month = (int)smstext[10] - 48;
+  month = month*10 + ((int)smstext[11] - 48);
+  return month;
+}
+/* trả về giá trị DAY của SMS */
+int getDay(){
+  int day = (int)smstext[12] - 48;
+  day = day*10 + ((int)smstext[13] - 48);
+  return day;
+}
+/* trả về giá trị HOUR của SMS */
+int getHour(){
+  int hour = (int)smstext[5] - 48;
+  hour = hour*10 + ((int)smstext[6] - 48);
+  return hour;
+}
+/* trả về giá trị MINUTE của SMS */
+int getMinute(){
+  int minute = (int)smstext[3] - 48;
+  minute = minute*10 + ((int)smstext[4] - 48);
+  return minute;
+}
+/* trả về giá trị DURATION của SMS */
+int getDuration(){
+  int duration = (int)smstext[0] - 48;
+  for(int i=1; i<=2; i++){
+    duration = duration*10 + ((int)smstext[i] - 48);
+  }
+  return duration*60;
+}
+/* thay đổi giá trị DURATION trong phiên */
+void setDuration(int dur){
+  nodeDuration = dur;
+}
+/* đếm thời gian hoạt động trong phiên, kết thúc phiên khi đạt giá trị DURATION */
+void nodeDurationCountdown(){
+  nodeDuration--;
+  if (nodeDuration == 0)
+    setStatus(0);
+  if (nodeDuration < 0)
+    setDuration(0);
+}
+/* trả về giá trị SECOND của SMS */
+int getSecond(){
+  int second = (int)smstext[0] - 48;
+  for(int i=1; i<=2; i++){
+    second = second*10 + ((int)smstext[i] - 48);
+  }
+  return second;
+}
+/* END-DEVELOPING FUNCTION */
+
+/* DS1307 FUNCTION */
+/* Chuyển từ format BCD (Binary-Coded Decimal) sang Decimal */
+int bcd2dec(byte num){
+  return ((num/16 * 10) + (num % 16));
+}
+/* Chuyển từ Decimal sang BCD */
+int dec2bcd(byte num){
+  return ((num/10 * 16) + (num % 10));
+}
+/* Đọc dữ liệu của DS1307 */
+void readDS1307(){
+  Wire.beginTransmission(DS1307);
+  Wire.write((byte)0x00);
+  Wire.endTransmission();
+  Wire.requestFrom(DS1307, NumberOfFields);
+  second = bcd2dec(Wire.read() & 0x7f);
+  minute = bcd2dec(Wire.read() );
+  hour   = bcd2dec(Wire.read() & 0x3f); // chế độ 24h.
+  wday   = bcd2dec(Wire.read() );
+  day    = bcd2dec(Wire.read() );
+  month  = bcd2dec(Wire.read() );
+  year   = bcd2dec(Wire.read() );
+  year += 2000;    
+}
+/* cài đặt thời gian cho DS1307 */
+void setTime(byte hr, byte min, byte sec, byte wd, byte d, byte mth, byte yr){
+  Wire.beginTransmission(DS1307);
+  Wire.write(byte(0x00)); // đặt lại pointer
+  Wire.write(dec2bcd(sec));
+  Wire.write(dec2bcd(min));
+  Wire.write(dec2bcd(hr));
+  Wire.write(dec2bcd(wd)); // day of week: Sunday = 1, Saturday = 7
+  Wire.write(dec2bcd(d)); 
+  Wire.write(dec2bcd(mth));
+  Wire.write(dec2bcd(yr));
+  Wire.endTransmission();
+}
+/* Dùng xong xóa */
+void digitalClockDisplay(){
+  Serial.print(hour);
+  printDigits(minute);
+  printDigits(second);
+  Serial.print(" ");
+  Serial.print(day);
+  Serial.print(" ");
+  Serial.print(month);
+  Serial.print(" ");
+  Serial.print(year); 
+  Serial.println(); 
+}
+void printDigits(int digits){
+  // các thành phần thời gian được ngăn chách bằng dấu :
+  Serial.print(":");
+
+  if(digits < 10)
+      Serial.print('0');
+  Serial.print(digits);
+}
+/* END-DS1307 FUNCTION */
+
+void setupDS1307(){
+  Wire.begin();
+  /* cài đặt thời gian cho module - dùng cho lần đầu */
+  //setTime(14, 48, 00, 6, 14, 7, 17); // 07:52:00 CN 11-06-2017
+  Serial.begin(9600);
+  Serial.println("\nDS1307 is now running.");
+}
+void setupSIM(){
+  Serial.begin(9600);
+  Serial.println("\nGui va nhan tin nhan");
+  if (gsm.begin(2400)){     
+    Serial.println("\nstatus=READY");     
+    started=true;
+  } else {
+    Serial.println("\nstatus=IDLE");
+  }
+  if(started){     
+    Serial.println("\nThiet bi da san sang.");
+    sms.SendSMS("+841686451311", "Online");
+    pinMode(13,OUTPUT);
+    digitalWrite(13,HIGH); /* đèn sáng khi sẵn sàng nhận sms */
+  }
+}
+void setupNode(){
+    pinMode(node,OUTPUT);   //Chân NODE là OUTPUT
+    digitalWrite(node,LOW); //Mặc định NODE sẽ ở trạng thái OFF
+}
+void setup() {
+  setupDS1307();
+  setupSIM();
+  setupNode();
+}
+
+void loop() {
+  if(started){
+    readDS1307(); /* Đọc dữ liệu của DS1307 */
+    if (currentSecond != second){
+      digitalClockDisplay();
+      testResult();
+      nodeScheduleAction();
+      nodeDurationCountdown();
+      currentSecond = second;
+      int pos;      /* địa chỉ bộ nhớ SIM (SIM lưu tối đa 40 sms nên max pos = 40) */
+      pos = sms.IsSMSPresent(SMS_UNREAD); /* kiểm tra tin nhắn chưa đọc trong bộ nhớ */
+                                          /* hàm này sẽ trả về giá trị trong khoảng từ 0-40 */
+      if(pos){//nếu có tin nhắn chưa đọc
+        if(sms.GetSMS(pos, number, smstext, 160)){
+          /* Test */
+          Serial.print("\nSMS from ");
+          Serial.print(number);
+          Serial.print(" : ");
+          Serial.println(smstext);
+          /* End-Test */
+          switch (getMode()){
+            case 1: /* điều khiển bằng tay */
+              if (getStatus() == 1){
+                if (checkStatus() == 0){
+                  setStatus(1);
+                  setSession(numberToInt());
+                  setDuration(getDuration());
+                } else 
+					sms.SendSMS(number, "Thiet bi dang hoat dong.");
+			  } else {
+                  if (checkSession() == numberToInt())
+                    setStatus(0);
+                  else 
+					sms.SendSMS(number, "Thiet bi dang hoat dong o phien khac.");
+              }
+              break;
+            case 2: /* đặt lịch */
+              nodeModeSchedule = getStatus();
+              switch (nodeModeSchedule){
+                case 1:
+                  setOnetimeSchedule();
+                  break;
+                case 2:
+                  setDailySchedule();
+                  break;
+                case 3:
+                  setWeekSchedule();
+                  break;
+                default:
+                  resetSchedule();
+              }
+              sms.SendSMS(number, "Dat lich thanh cong.");
+              break;
+            case 3: /* đồng bộ thời gian thực */
+              setTime(getHour(), getMinute(), getSecond(), getWDay(), getDay(), getMonth(), getYr());
+              break;
+            default: /* AdSMS, spamSMS, ... */
+              return;
+          }
+        }
+        sms.DeleteSMS(byte(pos));//xóa sms vừa nhận, tránh tràn bộ nhớ
+      }
+    }
+  } else Serial.println("Offline");
+}

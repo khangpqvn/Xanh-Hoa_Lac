@@ -1,0 +1,29 @@
+if (strcmp(statusDecoded,"ON") == 0){
+  int countNodeChar = 1;
+  node = (byte)indexDecoded[0]-48;
+  while (indexDecoded[countNodeChar]!= '\0'){
+	node= node*10 + (byte)indexDecoded[countNodeChar]-48;
+	countNodeChar++;
+  }
+  if (node<=0 && node>nodesCount){
+	sms.SendSMS(number, "Out of node range.");
+  } else if (nodeSession[node-1] != 0){
+	  if (nodeSession[node-1] == numberDecoded)
+		sms.SendSMS(number, "NODE is already ON.");
+	  else sms.SendSMS(number, "Different session is now working.");
+	} else {
+	digitalWrite(nodes[node-1],HIGH);
+	nodeSession[node-1] = numberDecoded;
+	nodeStatus[node-1] = 1;
+  }
+} else {
+  if (strcmp(statusDecoded,"OFF") == 0){
+	if (nodeSession[node-1] == numberDecoded) {
+	  digitalWrite(nodes[node-1],LOW);
+	  nodeSession[node-1] = 0;
+	  nodeStatus[node-1] = 0;
+	} else sms.SendSMS(number, "Different session is now working.");
+  } else {
+	  sms.SendSMS(number, "Undefine Status.");
+	}
+}

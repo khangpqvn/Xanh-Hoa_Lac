@@ -1,0 +1,9 @@
+SIM
+http://arduino.vn/bai-viet/851-su-dung-module-sim900a-mini-voi-arduino-module-nhan-tin-voi-arduino
+http://arduino.vn/bai-viet/854-sim900a-arduino-gui-va-nhan-sms
+http://arduino.vn/bai-viet/890-dieu-khien-thiet-bi-bang-tin-nhan-voi-sim900-va-arduino
+
+Realtime
+http://arduino.vn/bai-viet/369-giao-tiep-i2c-va-su-dung-module-realtime-clock-ds1307
+
+Hall
