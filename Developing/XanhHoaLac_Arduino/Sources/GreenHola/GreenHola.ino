@@ -80,11 +80,11 @@ void setStatus(int changeTo){
     digitalWrite(node,HIGH); //tắt
     setSession(0);
     setDuration(0);
-    //sms.SendSMS(number, "Thiet bi da tat.");
+    sms.SendSMS(number, "01. TAT thiet bi thanh cong.");
     flagAssetChecking = true;
   } else {
       digitalWrite(node,LOW);//bật
-      //sms.SendSMS(number, "Bat thiet bi thanh cong.");
+      sms.SendSMS(number, "01. BAT thiet bi thanh cong.");
       flagAssetChecking = true;
   }
 }
@@ -178,8 +178,8 @@ void setOnetimeSchedule(){
     nodeOTSchedule[3] = hr;
     nodeOTSchedule[4] = mi;
     nodeOTSchedule[5] = getDuration();
-    sms.SendSMS(number, "Dat lich thanh cong.");
-  } else sms.SendSMS(number, "Khong the hen gio vao thoi gian trong qua khu.");
+    sms.SendSMS(number, "01. Dat lich mot lan thanh cong.");
+  } else sms.SendSMS(number, "[TB] Khong the hen gio vao thoi gian trong qua khu.");
   
 }
 /* decode lịch đặt theo tuần */
@@ -209,7 +209,7 @@ void addMTNewSchedule(){
       return;
     }
   }
-  sms.SendSMS(number, "Bo nho dat lich da day.");
+  sms.SendSMS(number, "[TB] Bo nho dat lich day.");
 }
 /* reset đặt lịch 1 lần */
 void resetOTSchedule(){
@@ -342,7 +342,7 @@ void primaryAssetChecking(){
       i++;
     }
     if (primaryAsset < 10000)
-      //sms.SendSMS(number, "Tai khoan chinh sap het. Vui long nap them tien de duy tri hoat dong.");
+      sms.SendSMS(number, "[CANH BAO] Tai khoan chinh sap het. Vui long nap them tien de duy tri hoat dong.");
     flagAssetChecking = false;
   }
 }
@@ -473,10 +473,10 @@ void loop() {
                   if (checkSession()==1){
                     setSession(numberToInt());
                     setDuration(getDuration());
-                    sms.SendSMS(number, "Ghi de session thanh cong.");
+                    sms.SendSMS(number, "01. Ghi de session thanh cong.");
                     flagAssetChecking = true;
                   } else {
-                    sms.SendSMS(number, "Thiet bi dang hoat dong.");
+                    sms.SendSMS(number, "[TB] Thiet bi dang hoat dong.");
                     flagAssetChecking = true;
                   }
                 }
@@ -484,7 +484,7 @@ void loop() {
                   if (checkSession() == numberToInt() || checkSession()==1)
                     setStatus(0);
                   else {
-                    sms.SendSMS(number, "Thiet bi dang hoat dong o phien khac.");
+                    sms.SendSMS(number, "[TB] Thiet bi dang hoat dong o phien khac.");
                     flagAssetChecking = true;
                   }
               }
@@ -515,10 +515,10 @@ void loop() {
                   setDailySchedule();
                   if (!isConflict()){
                     addMTNewSchedule();
-                    sms.SendSMS(number, "Dat lich thanh cong.");
+                    sms.SendSMS(number, "01. Dat lich thanh cong.");
                     flagAssetChecking = true;
                   } else {
-                    sms.SendSMS(number, "Xung dot thoi gian he thong.");
+                    sms.SendSMS(number, "[TB] Xung dot thoi gian he thong.");
                     flagAssetChecking = true;
                   }
                   break;
@@ -526,10 +526,10 @@ void loop() {
                   setWeeklySchedule();
                   if (!isConflict()){
                     addMTNewSchedule();
-                    sms.SendSMS(number, "Dat lich thanh cong.");
+                    sms.SendSMS(number, "01. Dat lich thanh cong.");
                     flagAssetChecking = true;
                   } else {
-                    sms.SendSMS(number, "Xung dot thoi gian he thong.");
+                    sms.SendSMS(number, "[TB] Xung dot thoi gian he thong.");
                     flagAssetChecking = true;
                   }
                   break;
@@ -540,7 +540,7 @@ void loop() {
                 if (checkStatus() == 0)
                   setStatus(1);
                 else {
-                  sms.SendSMS(number, "Ghi de bang quyen quan ly thanh cong.");
+                  sms.SendSMS(number, "01. Ghi de bang quyen quan ly thanh cong.");
                   flagAssetChecking = true;
                 }
                 setSession(numberToInt());
