@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_control_background"
+    >
+
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chế độ"
+        android:textSize="15sp"
+        android:id="@+id/txt_mode"
+        android:textColor="#8f0042"
+        />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:id="@+id/rd_group"
+        android:layout_toRightOf="@id/txt_mode"
+        >
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnRD_remoting"
+            android:text="Điều khiển bằng tay"
+            android:checked="true"
+            android:textColor="@color/colorBlack"
+            android:buttonTint="@color/colorBlack"
+
+            />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnRD_schedule"
+            android:text="Đặt lịch"
+            android:textColor="@color/colorBlack"
+            android:buttonTint="@color/colorBlack"
+            />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnRD_synchronous"
+            android:text="Hủy đặt lịch trên node"
+            android:textColor="@color/colorBlack"
+            android:buttonTint="@color/colorBlack"
+            />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trạng thái:"
+        android:textSize="15sp"
+        android:id="@+id/txt_status"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@id/rd_group"
+        android:textColor="#8f0042"
+        />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/txt_status"
+        android:layout_below="@id/rd_group"
+        android:layout_marginLeft="10dp"
+        android:id="@+id/sprin_status"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/colorWhite"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_send"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:text="Gửi"
+        android:textColor="@color/colorBlack"
+        android:background="@drawable/btn_stroke"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/txt_status"
+        android:layout_above="@id/btn_send"
+        android:id="@+id/rlt_content"
+        android:layout_margin="5dp"
+        android:gravity="center"
+
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thời hạn tưới:"
+            android:textSize="15sp"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/txt_thoihantuoi"
+            android:layout_marginTop="5dp"
+            android:textColor="#8f0042"
+            />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/txt_thoihantuoi"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/sprin_select"
+            android:layout_marginTop="5dp"
+            android:textAlignment="center"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thời gian tưới trong ngày:"
+            android:id="@+id/txt_thoigiantuoi"
+            android:textSize="15sp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/sprin_select"
+            android:textColor="#8f0042"
+            />
+
+        <TimePicker
+            android:id="@+id/simpleTimePicker"
+            android:layout_below="@id/txt_thoigiantuoi"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:timePickerMode="spinner"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Các ngày trong tuần:"
+            android:id="@+id/txt_cacngay"
+            android:textSize="15sp"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@id/simpleTimePicker"
+            android:textColor="#8f0042"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rlt_date"
+            android:layout_below="@id/txt_cacngay"
+            >
+
+        </RelativeLayout>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_ngay2"
+            android:checked="true"
+            android:text="Thứ 2"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/txt_cacngay"
+            android:textSize="5sp"
+            android:textColor="@color/colorBlack"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_ngay3"
+            android:checked="false"
+            android:layout_marginTop="5dp"
+            android:text="Thứ 3"
+            android:layout_below="@id/txt_cacngay"
+            android:layout_toRightOf="@id/check_ngay2"
+            android:textSize="5sp"
+            android:textColor="@color/colorBlack"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_ngay4"
+            android:checked="false"
+            android:layout_marginTop="5dp"
+            android:text="Thứ 4"
+            android:layout_below="@id/txt_cacngay"
+            android:layout_toRightOf="@id/check_ngay3"
+            android:textSize="5sp"
+            android:textColor="@color/colorBlack"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_ngay5"
+            android:checked="false"
+
+            android:text="Thứ 5"
+            android:layout_below="@id/check_ngay4"
+            android:textSize="5sp"
+            android:textColor="@color/colorBlack"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_ngay6"
+            android:checked="false"
+            android:text="Thứ 6"
+            android:layout_below="@id/check_ngay4"
+            android:layout_toRightOf="@id/check_ngay5"
+            android:textSize="5sp"
+            android:textColor="@color/colorBlack"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_ngay7"
+            android:checked="false"
+            android:text="Thứ 7"
+            android:layout_below="@id/check_ngay2"
+            android:layout_toRightOf="@id/check_ngay6"
+            android:textSize="5sp"
+            android:textColor="@color/colorBlack"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_ngaycn"
+            android:checked="false"
+            android:text="CN"
+            android:layout_below="@id/check_ngay2"
+            android:layout_toRightOf="@id/check_ngay7"
+            android:textSize="5sp"
+            android:textColor="@color/colorBlack"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_cacngay"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:text="Chọn ngày"
+            android:id="@+id/btn_selectDate"
+            android:background="#BBDEFB"
+            />
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/cancel"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/btn_cancel"
+        />
+
+</RelativeLayout>

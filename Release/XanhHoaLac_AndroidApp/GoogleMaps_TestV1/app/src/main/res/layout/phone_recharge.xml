@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/linear_focus"
+    android:background="@drawable/phonecharge"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <RelativeLayout
+            android:layout_width="1dp"
+            android:layout_height="10dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/relative_center"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nạp Thẻ"
+            android:textSize="40sp"
+            android:layout_toLeftOf="@id/relative_center"
+            android:layout_marginTop="20dp"
+            android:id="@+id/txt_phoneRecharge"
+            android:textColor="@color/colorWhite"
+            />
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/cancel"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/btn_cancel"
+            />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="40sp"
+            android:id="@+id/edit_numberCard"
+            android:layout_marginTop="20dp"
+            android:inputType="number"
+            android:background="@drawable/border_edittext"
+            />
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/edit_numberCard"
+            android:text="Nạp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/btn_nap"
+            />
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="10dp"
+        >
+
+    </RelativeLayout>
+</LinearLayout>
