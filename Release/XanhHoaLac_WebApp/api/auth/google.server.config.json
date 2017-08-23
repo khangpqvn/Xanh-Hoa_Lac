@@ -1,0 +1,9 @@
+{
+  "google": {
+    "clientID": "431497818980-gv9n6lpvftrv3ct9lqbfj85iivdr552r.apps.googleusercontent.com",
+    "clientSecret": "twQ9ncUmrYAPgKVPKPrn5ukL",
+    "callbackURL": "http://quangkhang.com:3000/api/auth/google/callback"
+  }
+}
+
+

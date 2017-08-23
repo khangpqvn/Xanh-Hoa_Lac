@@ -1,0 +1,24 @@
+{
+  "messages": {
+    "addnode": {
+      "fail": "Thêm node không thành công!!!",
+      "success": "Thêm node thành công!!!"
+    },
+    "node_existed": "Số điện thoại đã tồn tại!!!",
+    "node_not_existed": "Node không tồn tại!!!",
+    "node_position_existed": "Vị trí bạn chọn đã có một node khác tồn tại!!!",
+    "modifilenode": {
+      "fail": "Cập nhật không thành công!!!",
+      "success": "Cập nhật thành công!!!"
+    },
+    "sync":{
+      "missing_version":"Bạn chưa cung cấp phiên bản dữ liệu",
+      "not_need_sync":"Không có thay đổi gì để đồng bộ"
+    },
+    "not_empty_phoneNumber":"Số điện thoại không được để trống!!!",
+    "max_length_phoneNumber":"Độ dài của Số điện thoại không được lớn hơn {MAXLENGTH} chữ số.",
+    "min_length_phoneNumber":"Độ dài của Số điện thoại không được nhỏ hơn {MINLENGTH} chữ số.",
+    "empty_lat": "Vĩ độ Không được để trống",
+    "empty_lng": "Kinh độ Không được để trống"
+  }
+}

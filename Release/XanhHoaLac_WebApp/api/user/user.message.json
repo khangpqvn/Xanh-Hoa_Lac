@@ -1,0 +1,31 @@
+{
+  "messages": {
+    "domain_err": "Email có tên miền không hợp lệ!",
+    "block_message": "Tài khoản của bạn đã bị khoá",
+    "authority_message": "Tài khoản của bạn không đủ quyền truy cập",
+    "username_existed": "Tài khoản đã tồn tại!",
+    "username_not_existed": "Tài khoản không tồn tại! ",
+    "add_user_status": {
+      "success": "Thêm mới người dùng thành công",
+      "fail": "Thêm mới người dùng thất bại"
+    },
+    "empty_info_validate": "Tên tài khoản người dùng hoặc quyền của người dùng không được bỏ trống",
+    "block_user_status": {
+      "success": "Khoá tài khoản thành công!!!",
+      "fail": "Khoá tài khoản thất bại!!!"
+    },
+    "unblock_user_status": {
+      "success": "Mở khoá tài khoản thành công!!!",
+      "fail": "Mở khoá tài khoản thất bại"
+    },
+    "update_user_status": {
+      "success": "Cập nhật thông tin tài khoản thành công!!!",
+      "fail": "Cập nhật thông tin tài khoản thất bại!!!"
+    },
+    "access_denied": "Truy cập bị từ chối!!",
+    "username_require": "Tên đăng nhập không được để trống",
+    "role_invalid": "Quyền người dùng không đúng định dạng",
+    "email_invalid": "Email không đúng định dạng",
+    "role_current": "Đây là quyền hiện tại của người dùng, không cần cập nhật lại"
+  }
+}

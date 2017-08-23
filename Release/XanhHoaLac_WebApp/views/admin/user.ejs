@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <%- include ../template/header.ejs %>
+    <title>Xanh-Hòa Lạc :: Quản lý người dùng</title>
+    <!-- Custom CSS -->
+    <style>
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .table thead > tr > th {
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .th-inner {
+            text-align: center;
+        }
+
+        .panel-primary > .panel-heading {
+            color: #fff;
+            background-color: #1f6f12;
+            border-color: #101010;
+        }
+
+        .row {
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        .panel-heading div {
+            margin-top: -18px;
+            font-size: 15px;
+        }
+
+        .panel-heading div span {
+            margin-left: 5px;
+        }
+
+        .panel-body {
+            display: none;
+        }
+    </style>
+    <script src="../js/callAjax.js"></script>
+    <script src="../js/moment.js" language="JavaScript"></script>
+</head>
+<body>
+<%- include ../template/navbar.ejs %>
+<% function btnBlockName(isBlock) {
+    if (isBlock) return "Mở Khoá";
+    return "Khoá";
+}
+function transRole(role) {
+    switch (role) {
+        case "manager":
+            return "Quản lý"
+        case "member":
+            return "Người dùng"
+        case "admin":
+            return "Quản trị viên"
+    }
+}
+%>
+<div class="container">
+    <!--<h1>Click the filter icon-->
+    <!--<small>(<i class="glyphicon glyphicon-filter"></i>)</small>-->
+    <!--</h1>-->
+    <div class="row">
+        <div class="col-md-14 col-xs-14 col-sm-14">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin người dùng</h3>
+                    <div class="pull-right">
+							<span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                                  data-container="body">
+								<i class="glyphicon glyphicon-filter"></i>
+							</span>
+                    </div>
+                </div>
+                <!--<div class="panel-body">-->
+                <input type="text" class="form-control" id="dev-table-filter" data-action="filter"
+                       data-filters="#dev-table" placeholder="Bộ lọc"/>
+                <!--</div>-->
+
+
+                <table class="table table-hover text-center table-striped " style="font-size: 20px" id="dev-table"
+                       data-toggle="table">
+                    <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Tài khoản</th>
+                        <th>Chức vụ</th>
+                        <th>Trạng thái</th>
+                        <th colspan="3"><input type="button" class="btn btn-md btn-block btn-warning"
+                                               value="Thêm người dùng"
+                                               data-title="Thêm người dùng" data-toggle="modal" data-target="#add"/>
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                    data.forEach(function(user){
+                    %>
+                    <tr>
+                        <td><%= user.name %></td>
+                        <td><%= user.username %></td>
+                        <td><%= transRole(user.role) %></td>
+                        <td><%= user.isBlock ? "Đã bị khóa" : "Hoạt động" %></td>
+                        <td>
+                            <input type="button" class="btn btn-md btn-success" value="Sửa chức vụ"
+                                   data-title="Sửa chức vụ"
+                                   data-toggle="modal" data-target="#edit"
+                                   onclick="setTarget('<%= user.username %>','<%= user.role %>',<%= user.isBlock %>)"
+                            />
+                        </td>
+                        <td>
+
+                            <input type="button" class="btn btn-md btn-info" value="Xem Log" data-title="Xem Log"
+                                   data-toggle="modal"
+                                   onclick="viewLog('<%= user._id %>','<%= user.username %>')"
+                            />
+                        </td>
+                        <td>
+
+                            <input type="button" class="btn btn-md btn-danger"
+                                   value="<%= btnBlockName(user.isBlock) %>"
+                                   data-title="Block"
+                                   onclick="setTarget('<%= user.username %>','<%= user.role %>',<%= user.isBlock %>)"
+                                   data-toggle="modal"
+                                   data-target="#block"/>
+
+                        </td>
+
+                    </tr>
+                    <%
+                    });
+                    %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--MODAL EDIT ROLE-->
+<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading">Thay đổi chức vụ người dùng </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select class="form-control" id="edit_role">
+                        <option value="" disabled selected>Chọn chức vụ</option>
+                        <!--<option>admin</option>-->
+                        <option value="manager">Quản lý</option>
+                        <option value="member">Người dùng</option>
+                    </select>
+                </div>
+                <div class="form-group mess" style="color: red; font-size: 30px" id="editFormMessage">
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-warning btn-lg" onclick="editUser()" style="width: 100%;"><span
+                            class="glyphicon glyphicon-ok-sign"></span> Cập nhật
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--MODAL EDIT ROLE/-->
+
+
+<!--MODAL ADD USER-->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="add" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading">Thêm người dùng</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="" id="username"
+                           placeholder="Tên tài khoản người dùng">
+                </div>
+                <div class="form-group">
+                    <select class="form-control" id="role">
+                        <option value="" disabled selected>Chức vụ người dùng</option>
+                        <!--<option>admin</option>-->
+                        <option value="manager">Quản lý</option>
+                        <option value="member">Người dùng</option>
+                    </select>
+                </div>
+                <div class="form-group mess" style="color: red; font-size: 30px" id="addFormMessage">
+
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-warning btn-lg" onclick="addUser()" style="width: 100%;"><span
+                            class="glyphicon glyphicon-ok-sign"></span> Thêm
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--MODAL ADD USER/-->
+
+<!--MODAL BLOCK USER-->
+<div class="modal fade" id="block" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading">
+                    <span id="confirm-head">Khoá tài khoản?</span></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>
+                    <span id="confirm-mess">Bạn có chắc chắn muốn khoá tài khoản này chứ?</span>
+                </div>
+
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-success" onclick="blockUser()" id="btnYes"><span
+                            class="glyphicon glyphicon-ok-sign"></span> Đồng ý
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                            class="glyphicon glyphicon-remove"></span> Không đồng ý
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--MODAL BLOCK USER/-->
+
+<!--MODAL VIEW LOG-->
+<div class="modal fade" id="view-log-modal" tabindex="-1" role="dialog" aria-labelledby="viewLog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading"><span
+                            id="history-user">Lịch sử hành động gần nhất</span></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover text-center table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Node mục tiêu</th>
+                        <th>Hành động</th>
+                        <th>Mô tả hành động</th>
+                        <th>Thời gian thực hiện</th>
+                    </tr>
+                    </thead>
+                    <tbody id="log-data">
+                    <tr>
+                        <td>Người thực hiện</td>
+                        <td>Hành động</td>
+                        <td>Mô tả hành động</td>
+                        <td>Thời gian thực hiện</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--MODAL VIEW LOG/-->
+
+<script>
+    var USERNAME, ROLE, ISBLOCK;
+    $(".modal").on("hidden.bs.modal", function () {
+        $(".form-control").val("");
+        $(".mess").html("");
+    });
+    function setTarget(username, role, isBlock) {
+        USERNAME = username;
+        ROLE = role;
+        ISBLOCK = isBlock;
+        if (ISBLOCK) {
+            $("#confirm-head").html("Mở khoá người dùng");
+            $("#confirm-mess").html("Bạn chắc chắn muốn mở khoá tài khoản " + username);
+        } else {
+            $("#confirm-head").html("Khoá người dùng");
+            $("#confirm-mess").html("Bạn chắc chắn muốn khoá tài khoản " + username);
+        }
+
+    }
+
+    function blockCallback(response) {
+        console.log(response);
+        if (response.status) {
+            location.reload();
+            setTarget("", "", null);
+        }
+        alert(response.message);
+
+    }
+
+    function blockUser() {
+        var data = JSON.stringify({
+            username: USERNAME
+        });
+
+
+        $('#block').modal('hide');
+        if (ISBLOCK)
+            callAjax(data, "/api/user/unblock", "POST", blockCallback);
+        else
+            callAjax(data, "/api/user/block", "POST", blockCallback);
+    }
+
+    function addCallback(response) {
+        $('#addFormMessage').html(response.message);
+//        alert(response.message);
+        if (response.status) {
+            location.reload();
+            setTarget("", "", null);
+        }
+    }
+
+    function addUser() {
+        var username = $("#username").val();
+        var role = $("#role").val();
+        var data = JSON.stringify({
+            username: username,
+            role: role
+        });
+
+
+//        $('#add').modal('hide');
+        callAjax(data, "/api/user/adduser", "POST", addCallback);
+
+    }
+
+    function editCallback(response) {
+        $('#editFormMessage').html(response.message);
+//        alert(response.message);
+        if (response.status) {
+            location.reload();
+            setTarget("", "", null);
+        }
+    }
+
+    function editUser() {
+        var role = $("#edit_role").val();
+        if(role){
+            var data = JSON.stringify({
+                username: USERNAME,
+                role: role
+            });
+
+
+//        $('#add').modal('hide');
+            callAjax(data, "/api/user/editrole", "POST", editCallback);
+        }else{
+            $('#editFormMessage').html("Chức vụ không được để trống");
+        }
+
+    }
+
+    function viewLog(_id, via) {
+        console.log(_id);
+        $("#history-user").html("Lịch sử tối đa 5 hành động gần nhất của người dùng: " + via);
+        var data = JSON.stringify({
+            target: _id
+        });
+        $("#log-data").html("");
+        showLogModal();
+        callAjax(data, "/api/log/viewLogByTarget", "POST", function (res) {
+//            var moment = moment();
+
+            if (res.status) {
+//                console.log(res.data);
+                res.data.forEach(function (log, index) {
+                    $("#log-data").append(
+                        "<tr>" +
+                        "<td>" + log.targetNode.phoneNumber + "</td>" +
+                        "<td>" + transAction(log.action) + "</td>" +
+                        "<td>" + log.description.replace("\n", "<br/>") + "</td>" +
+                        "<td>" + moment(log.time).format(' HH:mm:ss   DD/MM/YYYY') + "</td>" +
+                        "</tr>"
+                    );
+//                    $("#log-data").append("");
+//                    console.log(" p1 ", p1 ," p2 ", p2," p3 ",p3)
+                })
+            } else {
+                $("#log-data").append("<tr>" +
+                    "<td colspan='4'>" +
+                    res.message +
+                    "</td>" +
+                    "</tr>");
+            }
+        })
+        function showLogModal() {
+            $('#view-log-modal').modal({
+                show: 'true'
+            });
+        }
+    }
+
+    /**
+     *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+     *   but will likely encounter performance issues on larger tables.
+     *
+     *        <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+     *        $(input-element).filterTable()
+     *
+     *    The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
+     */
+    (function () {
+        'use strict';
+        var $ = jQuery;
+        $.fn.extend({
+            filterTable: function () {
+                return this.each(function () {
+                    $(this).on('keyup', function (e) {
+                        $('.filterTable_no_results').remove();
+                        var $this = $(this),
+                            search = $this.val().toLowerCase(),
+                            target = $this.attr('data-filters'),
+                            $target = $(target),
+                            $rows = $target.find('tbody tr');
+
+                        if (search == '') {
+                            $rows.show();
+                        } else {
+                            $rows.each(function () {
+                                var $this = $(this);
+                                $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
+                            })
+                            if ($target.find('tbody tr:visible').size() === 0) {
+                                var col_count = $target.find('tr').first().find('td').size();
+                                var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">Không có kết quả nào được tìm thấy</td></tr>')
+                                $target.find('tbody').append(no_results);
+                            }
+                        }
+                    });
+                });
+            }
+        });
+        $('[data-action="filter"]').filterTable();
+    })(jQuery);
+
+    $(function () {
+        // attach table filter plugin to inputs
+        $('[data-action="filter"]').filterTable();
+
+        $('.container').on('click', '.panel-heading span.filter', function (e) {
+            var $this = $(this),
+                $panel = $this.parents('.panel');
+
+            $panel.find('.panel-body').slideToggle();
+            if ($this.css('display') != 'none') {
+                $panel.find('.panel-body input').focus();
+            }
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+    })
+</script>
+
+</body>
+</html>
