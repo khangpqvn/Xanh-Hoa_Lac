@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lịch Được Đặt Trên Node"
+        android:textColor="#8f0042"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:id="@+id/txt_title"
+        />
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:layout_below="@id/txt_title"
+        android:textColor="@color/colorBlack"
+        android:id="@+id/txt_onetime"
+        android:gravity="center"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/btn_close"
+        android:text="Quay lại"
+        android:layout_centerHorizontal="true"
+        />
+
+    <ListView
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/btn_close"
+        android:layout_below="@id/txt_onetime"
+        android:id="@+id/listview_schedule"
+        ></ListView>
+
+</RelativeLayout>
