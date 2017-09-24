@@ -4,7 +4,7 @@ run "npm install"
 and then run "node server.js"
 write this line "127.0.0.1       quangkhang.com" to the end of host file at this address "C:\Windows\System32\drivers\etc"
 go to quangkhang.com:3000 to using this app
-be sure change the database of this app to your all database and create a collection name "users" and in this collection create
+be sure change the database of this app to your own database and create a collection name "users" and in this collection create
 a document like:
 {
     "_id" : ObjectId("5972139cb875a41e7eef10eb"),
